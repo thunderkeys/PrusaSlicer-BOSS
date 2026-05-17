@@ -359,6 +359,18 @@ std::string GCodeWriter::set_jerk(unsigned int jerk, const std::string_view comm
     return gcode;
 }
 
+std::string GCodeWriter::set_pressure_advance(double pa) const
+{
+    std::ostringstream gcode;
+    if (FLAVOR_IS(gcfRepRapSprinter) || FLAVOR_IS(gcfRepRapFirmware))
+        gcode << "M572 D" << this->extruder()->id() << " S" << pa << "\n";
+    else if (FLAVOR_IS(gcfKlipper))
+        gcode << "SET_PRESSURE_ADVANCE ADVANCE=" << pa << "\n";
+    else
+        gcode << "M900 K" << pa << "\n";
+    return gcode.str();
+}
+
 std::string GCodeWriter::reset_e(bool force)
 {
     return

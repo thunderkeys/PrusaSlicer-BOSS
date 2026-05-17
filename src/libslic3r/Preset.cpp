@@ -630,6 +630,8 @@ static std::vector<std::string> s_Preset_filament_options {
     // BOSS
     "filament_max_speed",
     "filament_prime_length_at_start",
+    "filament_enable_pressure_advance",
+    "filament_pressure_advance",
 };
 
 static std::vector<std::string> s_Preset_machine_limits_options {

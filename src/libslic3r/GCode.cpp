@@ -4594,6 +4594,8 @@ std::string GCodeGenerator::set_extruder(unsigned int extruder_id, double print_
             check_add_eol(gcode);
         }
         gcode += m_writer.toolchange(extruder_id);
+        if (m_config.filament_enable_pressure_advance.get_at(extruder_id))
+            gcode += m_writer.set_pressure_advance(m_config.filament_pressure_advance.get_at(extruder_id));
         return gcode;
     }
 
@@ -4678,6 +4680,9 @@ std::string GCodeGenerator::set_extruder(unsigned int extruder_id, double print_
     // Set the new extruder to the operating temperature.
     if (m_ooze_prevention.enable)
         gcode += m_ooze_prevention.post_toolchange(*this);
+
+    if (m_config.filament_enable_pressure_advance.get_at(extruder_id))
+        gcode += m_writer.set_pressure_advance(m_config.filament_pressure_advance.get_at(extruder_id));
 
     // The position is now known after the tool change.
     this->last_position = std::nullopt;

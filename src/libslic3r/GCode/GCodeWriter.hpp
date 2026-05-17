@@ -65,6 +65,7 @@ public:
     std::string set_travel_acceleration(unsigned int acceleration, double minimum_cruise_ratio)  { return set_acceleration_internal(Acceleration::Travel, acceleration, minimum_cruise_ratio, "Travel"); }
     std::string set_junction_deviation(double junction_deviation);
     std::string set_jerk(unsigned int jerk, const std::string_view comment);
+    std::string set_pressure_advance(double pa) const;
     std::string reset_e(bool force = false);
     std::string update_progress(unsigned int num, unsigned int tot, bool allow_100 = false) const;
     // return false if this extruder was already selected

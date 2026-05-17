@@ -2478,6 +2478,10 @@ void TabFilament::build()
         optgroup->append_single_option_line("filament_shrinkage_compensation_xy");
         optgroup->append_single_option_line("filament_shrinkage_compensation_z");
 
+        optgroup = page->new_optgroup(L("Pressure advance"));
+        optgroup->append_single_option_line("filament_enable_pressure_advance");
+        optgroup->append_single_option_line("filament_pressure_advance");
+
         optgroup = page->new_optgroup(L("Wipe tower parameters"));
         optgroup->append_single_option_line("filament_minimal_purge_on_wipe_tower");
 

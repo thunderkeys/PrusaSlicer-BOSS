@@ -1806,6 +1806,20 @@ void PrintConfigDef::init_fff_params()
     def->max = 10.;
     def->set_default_value(new ConfigOptionPercents { 0. });
 
+    def = this->add("filament_enable_pressure_advance", coBools);
+    def->label = L("Enable pressure advance");
+    def->tooltip = L("Enable pressure advance, auto calibration result will be overwritten once enabled.");
+    def->mode = comAdvanced;
+    def->set_default_value(new ConfigOptionBools{ false });
+
+    def = this->add("filament_pressure_advance", coFloats);
+    def->label = L("Pressure advance");
+    def->tooltip = L("Pressure advance (Klipper) AKA Linear advance factor (Marlin).");
+    def->min = 0;
+    def->max = 2;
+    def->mode = comAdvanced;
+    def->set_default_value(new ConfigOptionFloats{ 0.02 });
+
     def = this->add("fill_angle", coFloat);
     def->label = L("Fill angle");
     def->category = L("Infill");
