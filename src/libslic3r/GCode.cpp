@@ -122,6 +122,8 @@ static double lookup_pressure_advance(const std::string& pa_map, double nozzle_d
         try {
             double nd   = std::stod(token.substr(0, colon));
             double pa   = std::stod(token.substr(colon + 1));
+            if (nd < 0.0 || pa < 0.0 || pa > 2.0)
+                continue;
             double diff = std::abs(nd - nozzle_diameter);
             if (diff < best_diff) { best_diff = diff; best_pa = pa; }
         } catch (...) { continue; }
