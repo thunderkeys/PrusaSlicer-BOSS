@@ -101,6 +101,34 @@ using namespace std::literals::string_view_literals;
 
 namespace Slic3r {
 
+static double lookup_pressure_advance(const std::string& pa_map, double nozzle_diameter)
+{
+    if (pa_map.empty())
+        return -1.0;
+    std::istringstream ss(pa_map);
+    std::string token;
+    double best_pa   = -1.0;
+    double best_diff = std::numeric_limits<double>::max();
+    while (std::getline(ss, token, ',')) {
+        auto trim = [](std::string& s) {
+            s.erase(0, s.find_first_not_of(" \t"));
+            auto end = s.find_last_not_of(" \t");
+            if (end != std::string::npos) s.erase(end + 1);
+        };
+        trim(token);
+        size_t colon = token.find(':');
+        if (colon == std::string::npos)
+            continue;
+        try {
+            double nd   = std::stod(token.substr(0, colon));
+            double pa   = std::stod(token.substr(colon + 1));
+            double diff = std::abs(nd - nozzle_diameter);
+            if (diff < best_diff) { best_diff = diff; best_pa = pa; }
+        } catch (...) { continue; }
+    }
+    return (best_diff < 0.05) ? best_pa : -1.0;
+}
+
 // Only add a newline in case the current G-code does not end with a newline.
     static inline void check_add_eol(std::string& gcode)
     {
@@ -4594,8 +4622,12 @@ std::string GCodeGenerator::set_extruder(unsigned int extruder_id, double print_
             check_add_eol(gcode);
         }
         gcode += m_writer.toolchange(extruder_id);
-        if (m_config.filament_enable_pressure_advance.get_at(extruder_id))
-            gcode += m_writer.set_pressure_advance(m_config.filament_pressure_advance.get_at(extruder_id));
+        if (m_config.filament_enable_pressure_advance.get_at(extruder_id)) {
+            double pa = lookup_pressure_advance(m_config.filament_pressure_advance.get_at(extruder_id),
+                                                m_print->config().nozzle_diameter.get_at(extruder_id));
+            if (pa >= 0.0)
+                gcode += m_writer.set_pressure_advance(pa);
+        }
         return gcode;
     }
 
@@ -4681,8 +4713,12 @@ std::string GCodeGenerator::set_extruder(unsigned int extruder_id, double print_
     if (m_ooze_prevention.enable)
         gcode += m_ooze_prevention.post_toolchange(*this);
 
-    if (m_config.filament_enable_pressure_advance.get_at(extruder_id))
-        gcode += m_writer.set_pressure_advance(m_config.filament_pressure_advance.get_at(extruder_id));
+    if (m_config.filament_enable_pressure_advance.get_at(extruder_id)) {
+        double pa = lookup_pressure_advance(m_config.filament_pressure_advance.get_at(extruder_id),
+                                            m_print->config().nozzle_diameter.get_at(extruder_id));
+        if (pa >= 0.0)
+            gcode += m_writer.set_pressure_advance(pa);
+    }
 
     // The position is now known after the tool change.
     this->last_position = std::nullopt;

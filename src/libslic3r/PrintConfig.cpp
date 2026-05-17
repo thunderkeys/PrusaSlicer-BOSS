@@ -1812,13 +1812,15 @@ void PrintConfigDef::init_fff_params()
     def->mode = comAdvanced;
     def->set_default_value(new ConfigOptionBools{ false });
 
-    def = this->add("filament_pressure_advance", coFloats);
+    def = this->add("filament_pressure_advance", coStrings);
     def->label = L("Pressure advance");
-    def->tooltip = L("Pressure advance (Klipper) AKA Linear advance factor (Marlin).");
-    def->min = 0;
-    def->max = 2;
+    def->tooltip = L("Pressure advance values keyed by nozzle diameter. "
+                     "Comma-separated list of nozzle_mm:pa_value pairs. "
+                     "Example: 0.4:0.020,0.6:0.015,0.8:0.010. "
+                     "The entry nearest to the active nozzle diameter is used. "
+                     "Leave empty to disable.");
     def->mode = comAdvanced;
-    def->set_default_value(new ConfigOptionFloats{ 0.02 });
+    def->set_default_value(new ConfigOptionStrings{ "" });
 
     def = this->add("fill_angle", coFloat);
     def->label = L("Fill angle");
